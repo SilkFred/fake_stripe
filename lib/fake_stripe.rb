@@ -11,7 +11,7 @@ module FakeStripe
     recipient refund subscription token transfer}.freeze
   CARD_OBJECT_TYPE = "card"
   BANK_ACCOUNT_OBJECT_TYPE = "bank_account"
-
+  DEFAULT_API_KEY = 'FAKE_STRIPE_API_KEY'
 
   STRIPE_OBJECTS.each do |object|
     define_singleton_method "#{object}_count" do
@@ -30,7 +30,7 @@ module FakeStripe
   end
 
   def self.stub_stripe
-    Stripe.api_key = 'FAKE_STRIPE_API_KEY'
+    Stripe.api_key = ENV.fetch('STRIPE_SECRET_KEY', DEFAULT_API_KEY)
     FakeStripe.reset
     FakeStripe::StubStripeJS.boot_once
     stub_request(:any, /api.stripe.com/).to_rack(FakeStripe::StubApp)
